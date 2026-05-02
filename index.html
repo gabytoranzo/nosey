@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Neon Drift</title>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cpath fill='%233ee8ff' d='M32 4 52 56 32 45 12 56z'/%3E%3Ccircle cx='32' cy='34' r='7' fill='%23071014'/%3E%3C/svg%3E" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="game-shell">
+      <section class="hud" aria-label="Game status">
+        <div>
+          <span class="label">Score</span>
+          <strong id="score">0</strong>
+        </div>
+        <div>
+          <span class="label">Best</span>
+          <strong id="best">0</strong>
+        </div>
+        <div>
+          <span class="label">Charge</span>
+          <strong id="charge">0%</strong>
+        </div>
+        <button id="pauseButton" class="icon-button" type="button" aria-label="Pause game" title="Pause">
+          <span aria-hidden="true">II</span>
+        </button>
+      </section>
+
+      <section class="stage" aria-label="Neon Drift game area">
+        <canvas id="gameCanvas" width="960" height="600" aria-label="Neon Drift playfield"></canvas>
+
+        <div id="startPanel" class="overlay">
+          <h1>Neon Drift</h1>
+          <p>Thread the courier through traffic, catch charge cells, and fire a pulse when the route gets mean.</p>
+          <button id="startButton" type="button">Start Run</button>
+        </div>
+
+        <div id="gameOverPanel" class="overlay hidden">
+          <h2>Run Ended</h2>
+          <p id="finalScore">Score 0</p>
+          <button id="restartButton" type="button">Run Again</button>
+        </div>
+      </section>
+
+      <section class="controls" aria-label="Game controls">
+        <button id="leftButton" type="button" aria-label="Move left">←</button>
+        <button id="pulseButton" type="button" aria-label="Fire pulse">Pulse</button>
+        <button id="rightButton" type="button" aria-label="Move right">→</button>
+      </section>
+    </main>
+
+    <script src="game.js"></script>
+  </body>
+</html>
