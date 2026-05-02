@@ -19,7 +19,7 @@
           <strong id="best">0</strong>
         </div>
         <div>
-          <span class="label">Charge</span>
+          <span class="label">Pellets</span>
           <strong id="charge">0%</strong>
         </div>
         <button id="pauseButton" class="icon-button" type="button" aria-label="Pause game" title="Pause">
@@ -32,20 +32,37 @@
 
         <div id="startPanel" class="overlay">
           <h1>Neon Drift</h1>
-          <p>Thread the courier through traffic, catch charge cells, and fire a pulse when the route gets mean.</p>
-          <button id="startButton" type="button">Start Run</button>
+          <p>Choose your maze runner, eat every pellet, and dodge the ghosts.</p>
+          <div class="character-grid" aria-label="Choose character">
+            <button class="character-option selected" type="button" data-character="dad" aria-pressed="true">
+              <img src="assets/character.png" alt="" />
+              <span>Dad</span>
+            </button>
+            <button class="character-option" type="button" data-character="g" aria-pressed="false">
+              <img src="assets/character-luna.png" alt="" />
+              <span>G</span>
+            </button>
+            <button class="character-option" type="button" data-character="pau" aria-pressed="false">
+              <img src="assets/character-maya.png" alt="" />
+              <span>Pau</span>
+            </button>
+          </div>
         </div>
 
         <div id="gameOverPanel" class="overlay hidden">
-          <h2>Run Ended</h2>
+          <h2>Maze Ended</h2>
           <p id="finalScore">Score 0</p>
-          <button id="restartButton" type="button">Run Again</button>
+          <div class="end-actions">
+            <button id="restartButton" type="button">Run Again</button>
+            <button id="characterSelectButton" type="button">Change Runner</button>
+          </div>
         </div>
       </section>
 
       <section class="controls" aria-label="Game controls">
+        <button id="upButton" type="button" aria-label="Move up">↑</button>
         <button id="leftButton" type="button" aria-label="Move left">←</button>
-        <button id="pulseButton" type="button" aria-label="Fire pulse">Pulse</button>
+        <button id="downButton" type="button" aria-label="Move down">↓</button>
         <button id="rightButton" type="button" aria-label="Move right">→</button>
       </section>
     </main>

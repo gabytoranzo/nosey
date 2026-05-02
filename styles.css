@@ -100,7 +100,7 @@ button {
 .stage {
   position: relative;
   min-height: 0;
-  aspect-ratio: 16 / 10;
+  aspect-ratio: 19 / 15;
   background: #070b10;
   border: 1px solid var(--line);
   border-radius: 8px;
@@ -159,15 +159,66 @@ canvas {
   font-weight: 900;
 }
 
+.character-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(118px, 160px));
+  justify-content: center;
+  gap: 12px;
+}
+
+.overlay .character-option {
+  width: 100%;
+  min-height: 176px;
+  display: grid;
+  justify-items: center;
+  align-content: center;
+  gap: 8px;
+  padding: 12px;
+  background: rgba(29, 38, 51, 0.88);
+  color: var(--text);
+}
+
+.character-option img {
+  width: min(112px, 100%);
+  aspect-ratio: 1;
+  object-fit: contain;
+  filter: drop-shadow(0 0 18px rgba(62, 232, 255, 0.42));
+}
+
+.character-option span {
+  font-weight: 900;
+}
+
+.character-option.selected,
+.character-option:hover,
+.character-option:focus-visible {
+  outline: 3px solid var(--lime);
+  outline-offset: 2px;
+}
+
+.end-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(130px, 180px));
+  justify-content: center;
+  gap: 10px;
+}
+
+.overlay #characterSelectButton {
+  background: var(--panel-strong);
+  color: var(--text);
+}
+
 .controls {
   display: grid;
-  grid-template-columns: 1fr 1.25fr 1fr;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 10px;
+  width: min(340px, 100%);
+  margin: 0 auto;
 }
 
 .controls button {
   font-weight: 900;
-  font-size: 1rem;
+  font-size: 1.25rem;
 }
 
 .controls button:active,
@@ -176,9 +227,22 @@ canvas {
   transform: translateY(1px);
 }
 
-#pulseButton {
+#upButton {
+  grid-column: 2;
+}
+
+#leftButton {
+  grid-column: 1;
+}
+
+#downButton {
+  grid-column: 2;
   background: linear-gradient(135deg, rgba(255, 202, 88, 0.95), rgba(255, 79, 139, 0.95));
   color: #16080d;
+}
+
+#rightButton {
+  grid-column: 3;
 }
 
 @media (max-width: 720px) {
@@ -198,5 +262,17 @@ canvas {
   .controls button {
     min-height: 58px;
     font-size: 1.08rem;
+  }
+
+  .character-grid,
+  .end-actions {
+    grid-template-columns: 1fr;
+  }
+
+  .overlay .character-option {
+    min-height: 132px;
+    grid-template-columns: 88px 1fr;
+    justify-items: start;
+    text-align: left;
   }
 }
