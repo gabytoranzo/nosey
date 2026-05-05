@@ -580,10 +580,13 @@
     function loadPreferredVoice() {
       if (!("speechSynthesis" in window)) return null;
       const voices = window.speechSynthesis.getVoices();
+      const femaleVoicePattern = /female|woman|kate|serena|susan|samantha|victoria|karen|moira|tessa|fiona|zira|shelley|martha|libby|sonia/i;
       preferredVoice =
+        voices.find(voice => voice.lang && voice.lang.toLowerCase().startsWith("en-gb") && femaleVoicePattern.test(voice.name)) ||
+        voices.find(voice => /british|uk|united kingdom/i.test(voice.name) && femaleVoicePattern.test(voice.name)) ||
+        voices.find(voice => femaleVoicePattern.test(voice.name) && voice.lang && voice.lang.toLowerCase().startsWith("en")) ||
         voices.find(voice => voice.lang && voice.lang.toLowerCase() === "en-gb") ||
         voices.find(voice => voice.lang && voice.lang.toLowerCase().startsWith("en-gb")) ||
-        voices.find(voice => /british|uk|united kingdom|daniel|kate|serena|susan/i.test(voice.name)) ||
         voices.find(voice => voice.lang && voice.lang.toLowerCase().startsWith("en")) ||
         null;
       return preferredVoice;
