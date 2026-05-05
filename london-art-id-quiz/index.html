@@ -187,6 +187,24 @@
       line-height: 1.35;
     }
 
+    .tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin: 8px 0 4px;
+    }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      min-height: 24px;
+      border: 1px solid #b8b8b8;
+      background: #f4f4f2;
+      padding: 4px 7px;
+      font-size: 12px;
+      line-height: 1.1;
+    }
+
     .result {
       border: 1px solid var(--line);
       background: #fff;
@@ -489,6 +507,55 @@
       "Cecily Brown": "Brown is known for energetic, layered paintings that move between abstraction and figuration. Her work reactivates historical painting through motion, fragmentation, eroticism, and dense brushwork."
     };
 
+    const themeTags = {
+      "The Railway Station": ["London as modern city", "Transport", "Class", "Art market", "Spectacle"],
+      "The Blue Bower": ["Gender", "Aestheticism", "Pre-Raphaelitism", "Female image", "Art for art's sake"],
+      "Flaming June": ["Gender", "Aestheticism", "Body", "Art for art's sake", "Victorian taste"],
+      "The Heart of the Empire": ["Empire", "National identity", "London as imperial capital", "Urban symbolism"],
+      "Mrs Mounter at the Breakfast Table": ["Class", "Domestic interior", "Modernism", "Everyday London", "Gender"],
+      "Gauguins and Connoisseurs at the Stafford Gallery": ["Art market", "Gallery culture", "Modernism", "Spectatorship", "European influence"],
+      "Abstract Painting": ["Modernism", "Abstraction", "Bloomsbury", "European influence", "Form and color"],
+      "Kermesse": ["Modernism", "Vorticism", "Urban energy", "Fragmentation", "European influence"],
+      "The Rock Drill": ["Modernism", "Machine age", "Body", "Technology", "War anxiety"],
+      "Gassed": ["World War I", "War trauma", "Body", "Public memory", "Anti-heroic war art"],
+      "We Are Making a New World": ["World War I", "Landscape", "War trauma", "Modernity as destruction", "Irony"],
+      "Whence & Whither?": ["Transport", "Modern design", "Interwar London", "Speed", "Public culture"],
+      "The Deluge": ["Women artists", "Interwar modernism", "History painting", "Crisis", "Religion and modernity"],
+      "Morning": ["Women artists", "Gender", "Body", "Interwar figuration", "Modern nude"],
+      "Four Piece Composition: Reclining Figure": ["Modernism", "Sculpture", "Body", "Abstraction", "Material"],
+      "Three Forms": ["Modernism", "Sculpture", "Abstraction", "Material", "International modernism"],
+      "London Underground Map": ["Transport", "Public design", "Modern London", "Institutions", "Everyday modernism"],
+      "Angel of Anarchy": ["Surrealism", "Gender", "Identity", "Modernism", "Uncanny"],
+      "Devastation in the City: Twisted Girders against a Background of Fire": ["World War II", "Blitz", "Urban destruction", "Architecture", "War trauma"],
+      "Totes Meer": ["World War II", "Technology", "Landscape", "War trauma", "Surrealism"],
+      "People Sheltering in the Tube, Elephant and Castle Underground Station": ["World War II", "Blitz", "Transport", "Public shelter", "Photography"],
+      "Shelter Drawing": ["World War II", "Blitz", "Body", "Shelter", "Public vulnerability"],
+      "Rebuilding the Empire Cinema, Leicester Square": ["Postwar reconstruction", "Urban space", "Materiality", "London after the Blitz", "Labor"],
+      "Study for Portrait after the Life Mask of William Blake": ["Postwar body", "Portraiture", "Trauma", "Existentialism", "British tradition"],
+      "Boy Smoking": ["Postwar body", "Portraiture", "Realism", "Interior psychology", "Anti-ideal body"],
+      "The Only Blonde in the World": ["Pop Art", "Gender", "Celebrity", "Mass media", "Female authorship"],
+      "A Rake's Progress: The Arrival": ["Pop Art", "Print culture", "Queer identity", "Mobility", "Transatlantic London"],
+      "Just What Is It That Makes Today's Homes So Different, So Appealing?": ["Pop Art", "Consumer culture", "Mass media", "Domestic space", "Postwar modernity"],
+      "Self-Portrait with Badges": ["Pop Art", "Youth culture", "Self-fashioning", "Mass media", "Collecting"],
+      "Mirror": ["Diaspora", "Abstraction", "Migration", "Black British art", "Identity"],
+      "In the House of My Father": ["Black British art", "Diaspora", "Home", "Body", "Illness and fragility"],
+      "Housewife with Steak Knives": ["Diaspora", "Feminism", "Domesticity", "Postcolonial critique", "Gender"],
+      "No Woman, No Cry": ["Black British art", "Diaspora", "Mourning", "Race", "Public memory"],
+      "Mr and Mrs Andrews Without Their Heads": ["Postcolonial critique", "Empire", "Canon revision", "Class", "Portraiture"],
+      "Are You Angry or Are You Boring?": ["Urban culture", "Text", "Performance", "Public provocation", "Identity"],
+      "God Save the Queen": ["Punk", "Mass media", "Anti-establishment politics", "Monarchy", "Graphic design"],
+      "This Little Piggy": ["YBAs", "Market spectacle", "Death", "Installation", "Institutional display"],
+      "Everyone I Have Ever Slept With 1963-1995": ["YBAs", "Feminism", "Confession", "Textile", "Private life as public art"],
+      "Map of an Englishman": ["Identity", "Englishness", "Mapping", "Class", "Masculinity"],
+      "Propped": ["Feminism", "Body", "Painting", "Anti-ideal nude", "YBAs"],
+      "46 Sidney Road": ["Contemporary London", "Place", "Urban memory", "Everyday city", "Postwar afterlife"],
+      "Thamesmead Codex": ["Public art", "Text", "Place", "Civic voice", "Contemporary London"],
+      "Balloon Girl": ["Street art", "Market spectacle", "Public art", "Anti-establishment image", "Mass circulation"],
+      "Any Number of Preoccupations": ["Black portraiture", "Identity", "Canon revision", "Contemporary painting", "Fictional subject"],
+      "Portrait of Lynette Yiadom-Boakye, Jacob Morland of Capplethwaite": ["Black portraiture", "Canon revision", "Empire", "Status", "Museum display"],
+      "The Hound with the Horses": ["Contemporary painting", "Art history", "Body and motion", "Abstraction and figuration", "Painterly tradition"]
+    };
+
     const artFrame = document.getElementById("artFrame");
     const form = document.getElementById("quizForm");
     const artistInput = document.getElementById("artistInput");
@@ -575,6 +642,12 @@
 
     function displayDate(work) {
       return work.dateLabel || String(work.year);
+    }
+
+    function renderTags(work) {
+      const tags = themeTags[work.title] || [];
+      if (!tags.length) return "";
+      return `<div class="tags">${tags.map(tag => `<span class="tag">${tag}</span>`).join("")}</div>`;
     }
 
     function loadPreferredVoice() {
@@ -677,6 +750,8 @@
           <p><strong>Artist:</strong> ${current.artist}</p>
           <p><strong>Title:</strong> <em>${current.title}</em></p>
           <p><strong>Date:</strong> ${displayDate(current)} <span style="color:var(--muted)">(accepted ${range.start}-${range.end})</span></p>
+          <p><strong>Long-essay themes:</strong></p>
+          ${renderTags(current)}
           <p><strong>Artist known for:</strong> ${artistKnownFor[current.artist] || "This artist is known for work connected to the course's broader timeline of British and London art."}</p>
           <p><strong>Historical significance:</strong> ${significance[current.title] || "This work is significant for the course timeline and should be connected to its period, medium, and London context."}</p>
           <div class="audio-row">
