@@ -1,0 +1,643 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>London Art ID Quiz</title>
+  <style>
+    :root {
+      --ink: #151515;
+      --muted: #636363;
+      --line: #d4d4d4;
+      --panel: #f6f6f4;
+      --ok: #16724a;
+      --bad: #a12b2b;
+      --focus: #1c5d99;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      color: var(--ink);
+      background: #fff;
+    }
+
+    main {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: minmax(0, 1.15fr) minmax(340px, 0.85fr);
+    }
+
+    .stage {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 28px;
+      background: #ededeb;
+      border-right: 1px solid var(--line);
+    }
+
+    .art-frame {
+      width: min(100%, 900px);
+      height: min(82vh, 720px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #fafafa;
+      border: 1px solid #c9c9c9;
+      padding: 16px;
+    }
+
+    .art-frame.two {
+      gap: 12px;
+    }
+
+    .art-frame img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+      display: block;
+    }
+
+    .art-frame.two img {
+      max-width: 49%;
+    }
+
+    .panel {
+      min-height: 100vh;
+      padding: 28px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      background: var(--panel);
+    }
+
+    header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+      border-bottom: 2px solid var(--ink);
+      padding-bottom: 14px;
+    }
+
+    h1 {
+      font-size: 24px;
+      margin: 0 0 5px;
+      line-height: 1.05;
+    }
+
+    .sub {
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.35;
+    }
+
+    .counter {
+      min-width: 86px;
+      text-align: right;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    form {
+      display: grid;
+      gap: 13px;
+    }
+
+    label {
+      display: grid;
+      gap: 5px;
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .04em;
+    }
+
+    input {
+      width: 100%;
+      border: 1px solid #adadad;
+      background: #fff;
+      color: var(--ink);
+      font-size: 17px;
+      padding: 11px 12px;
+      outline: none;
+    }
+
+    input:focus {
+      border-color: var(--focus);
+      box-shadow: 0 0 0 3px rgba(28, 93, 153, .15);
+    }
+
+    .actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 3px;
+    }
+
+    button {
+      border: 1px solid var(--ink);
+      background: var(--ink);
+      color: #fff;
+      padding: 11px 12px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    button.secondary {
+      background: #fff;
+      color: var(--ink);
+    }
+
+    button:disabled {
+      cursor: default;
+      opacity: .55;
+    }
+
+    .result {
+      border: 1px solid var(--line);
+      background: #fff;
+      padding: 13px;
+      min-height: 154px;
+    }
+
+    .result h2 {
+      margin: 0 0 9px;
+      font-size: 17px;
+    }
+
+    .result p {
+      margin: 6px 0;
+      font-size: 14px;
+      line-height: 1.35;
+    }
+
+    .ok { color: var(--ok); font-weight: 700; }
+    .bad { color: var(--bad); font-weight: 700; }
+
+    .answer {
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px solid var(--line);
+    }
+
+    .scoreboard {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+    }
+
+    .score {
+      background: #fff;
+      border: 1px solid var(--line);
+      padding: 10px;
+      min-height: 66px;
+    }
+
+    .score span {
+      display: block;
+      color: var(--muted);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: .04em;
+      margin-bottom: 5px;
+    }
+
+    .score strong {
+      font-size: 20px;
+    }
+
+    .toggles {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .toggles label {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      text-transform: none;
+      letter-spacing: 0;
+      font-weight: 400;
+    }
+
+    .toggles input {
+      width: auto;
+      padding: 0;
+    }
+
+    .hint {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.4;
+      margin-top: auto;
+    }
+
+    @media (max-width: 860px) {
+      main {
+        grid-template-columns: 1fr;
+      }
+      .stage {
+        min-height: 48vh;
+        border-right: 0;
+        border-bottom: 1px solid var(--line);
+      }
+      .art-frame {
+        height: 42vh;
+      }
+      .panel {
+        min-height: auto;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <section class="stage" aria-label="Painting">
+      <div class="art-frame" id="artFrame"></div>
+    </section>
+
+    <section class="panel">
+      <header>
+        <div>
+          <h1>London Art ID Quiz</h1>
+          <p class="sub">Type the artist, work title, and a date within 10 years. The loop continues automatically after each answer.</p>
+        </div>
+        <div class="counter" id="counter"></div>
+      </header>
+
+      <div class="scoreboard">
+        <div class="score"><span>Seen</span><strong id="seen">0</strong></div>
+        <div class="score"><span>Artist</span><strong id="artistScore">0</strong></div>
+        <div class="score"><span>Title</span><strong id="titleScore">0</strong></div>
+        <div class="score"><span>Date</span><strong id="dateScore">0</strong></div>
+      </div>
+
+      <form id="quizForm" autocomplete="off">
+        <label>
+          Artist name
+          <input id="artistInput" name="artist" type="text">
+        </label>
+        <label>
+          Painting / work name
+          <input id="titleInput" name="title" type="text">
+        </label>
+        <label>
+          Date
+          <input id="dateInput" name="date" type="number" inputmode="numeric">
+        </label>
+        <div class="actions">
+          <button type="submit" id="checkButton">Check</button>
+          <button type="button" class="secondary" id="nextButton">Skip / Next</button>
+        </div>
+      </form>
+
+      <div class="result" id="result">
+        <h2>Ready</h2>
+        <p>Look only at the image, then enter the ID.</p>
+      </div>
+
+      <div class="toggles">
+        <label><input type="checkbox" id="shuffleToggle" checked> Shuffle loop</label>
+        <label><input type="checkbox" id="strictTitleToggle"> Stricter title matching</label>
+      </div>
+
+      <p class="hint">Keyboard: press Enter to check, then Enter again for the next image. Artist and title matching ignores capitalization, punctuation, accents, and small words like “the.”</p>
+    </section>
+  </main>
+
+  <script>
+    const works = [
+      {artist:"William Powell Frith", title:"The Railway Station", year:1862, images:["london_art_assets/image1.jpg"], aliases:["Frith"]},
+      {artist:"Dante Gabriel Rossetti", title:"The Blue Bower", year:1865, images:["london_art_assets/image2.jpg"], aliases:["Rossetti"]},
+      {artist:"Frederic Leighton", title:"Flaming June", year:1895, images:["london_art_assets/image3.jpg"], aliases:["Leighton"]},
+      {artist:"Niels Lund", title:"The Heart of the Empire", year:1904, images:["london_art_assets/image4.jpg"], aliases:["Niels Moeller Lund","Niels Moller Lund","Lund"]},
+      {artist:"Harold Gilman", title:"Mrs Mounter at the Breakfast Table", year:1917, images:["london_art_assets/image5.jpg"], aliases:["Gilman"], titleAliases:["Mrs Mounter"]},
+      {artist:"Spencer Gore", title:"Gauguins and Connoisseurs at the Stafford Gallery", year:1911, images:["london_art_assets/image6.jpg"], aliases:["Gore"], titleAliases:["Gauguins and Connoisseurs"]},
+      {artist:"Vanessa Bell", title:"Abstract Painting", year:1914, images:["london_art_assets/image7.jpg"], aliases:["Bell"]},
+      {artist:"Wyndham Lewis", title:"Kermesse", year:1912, images:["london_art_assets/image8.jpg"], aliases:["Lewis"]},
+      {artist:"Jacob Epstein", title:"The Rock Drill", year:1914, startYear:1913, endYear:1916, dateLabel:"1913-16", images:["london_art_assets/image9.jpg"], aliases:["Epstein"], titleAliases:["Rock Drill"]},
+      {artist:"John Singer Sargent", title:"Gassed", year:1919, images:["london_art_assets/image10.jpg"], aliases:["Sargent"]},
+      {artist:"Paul Nash", title:"We Are Making a New World", year:1918, images:["london_art_assets/image11.jpg"], aliases:["Nash"]},
+      {artist:"Cyril Power", title:"Whence & Whither?", year:1934, images:["london_art_assets/image12.jpg"], aliases:["Power"], titleAliases:["Whence and Whither","Whence Whither"]},
+      {artist:"Winifred Knights", title:"The Deluge", year:1920, images:["london_art_assets/image13.jpg"], aliases:["Knights"]},
+      {artist:"Dod Procter", title:"Morning", year:1926, images:["london_art_assets/image14.jpg"], aliases:["Procter"]},
+      {artist:"Henry Moore", title:"Four Piece Composition: Reclining Figure", year:1934, images:["london_art_assets/image15.jpg"], aliases:["Moore"], titleAliases:["Four Piece Composition","Reclining Figure"]},
+      {artist:"Barbara Hepworth", title:"Three Forms", year:1935, images:["london_art_assets/image16.jpg"], aliases:["Hepworth"]},
+      {artist:"Frank Pick", title:"London Underground Map", year:1933, images:["london_art_assets/image17.jpg"], aliases:["Pick"], titleAliases:["Underground Map"]},
+      {artist:"Eileen Agar", title:"Angel of Anarchy", year:1938, startYear:1936, endYear:1940, dateLabel:"1936-40", images:["london_art_assets/image18.jpg"], aliases:["Agar"]},
+      {artist:"Graham Sutherland", title:"Devastation in the City: Twisted Girders against a Background of Fire", year:1941, images:["london_art_assets/image19.jpg"], aliases:["Sutherland"], titleAliases:["Devastation in the City","Twisted Girders"]},
+      {artist:"Paul Nash", title:"Totes Meer", year:1945, images:["london_art_assets/image20.jpg"], aliases:["Nash"]},
+      {artist:"Bill Brandt", title:"People Sheltering in the Tube, Elephant and Castle Underground Station", year:1940, images:["london_art_assets/image21.jpg"], aliases:["Brandt"], titleAliases:["People Sheltering in the Tube","Elephant and Castle Underground Station"]},
+      {artist:"Henry Moore", title:"Shelter Drawing", year:1941, images:["london_art_assets/image22.jpg"], aliases:["Moore"]},
+      {artist:"Frank Auerbach", title:"Rebuilding the Empire Cinema, Leicester Square", year:1962, images:["london_art_assets/image23.jpg"], aliases:["Auerbach"], titleAliases:["Rebuilding the Empire Cinema"]},
+      {artist:"Francis Bacon", title:"Study for Portrait after the Life Mask of William Blake", year:1955, images:["london_art_assets/image24.jpg"], aliases:["Bacon"], titleAliases:["Study for Portrait"]},
+      {artist:"Lucian Freud", title:"Boy Smoking", year:1951, images:["london_art_assets/image25.jpg"], aliases:["Freud"]},
+      {artist:"Pauline Boty", title:"The Only Blonde in the World", year:1963, images:["london_art_assets/image26.jpg"], aliases:["Boty"], titleAliases:["Only Blonde in the World"]},
+      {artist:"David Hockney", title:"A Rake's Progress: The Arrival", year:1963, images:["london_art_assets/image27.jpg"], aliases:["Hockney"], titleAliases:["Rake's Progress The Arrival","The Arrival"]},
+      {artist:"Richard Hamilton", title:"Just What Is It That Makes Today's Homes So Different, So Appealing?", year:1956, images:["london_art_assets/image28.jpg"], aliases:["Hamilton"], titleAliases:["Just What Is It That Makes Today's Homes So Different So Appealing","Just What Is It"]},
+      {artist:"Peter Blake", title:"Self-Portrait with Badges", year:1961, images:["london_art_assets/image29.jpg","london_art_assets/image30.jpg"], aliases:["Blake"]},
+      {artist:"Frank Bowling", title:"Mirror", year:1966, images:["london_art_assets/image31.jpg"], aliases:["Bowling"]},
+      {artist:"Donald Rodney", title:"In the House of My Father", year:1997, startYear:1996, endYear:1997, dateLabel:"1996-97", images:["london_art_assets/image32.jpg"], aliases:["Rodney"]},
+      {artist:"Sutapa Biswas", title:"Housewife with Steak Knives", year:1985, dateLabel:"c. 1985", images:["london_art_assets/image33.jpg"], aliases:["Biswas"], titleAliases:["Housewives with Steak Knives"]},
+      {artist:"Chris Ofili", title:"No Woman, No Cry", year:1998, images:["london_art_assets/image34.jpg"], aliases:["Ofili"]},
+      {artist:"Yinka Shonibare", title:"Mr and Mrs Andrews Without Their Heads", year:1998, images:["london_art_assets/image35.jpg"], aliases:["Shonibare","Yinka Shonibare MBE"]},
+      {artist:"Gilbert and George", title:"Are You Angry or Are You Boring?", year:1977, images:["london_art_assets/image36.jpg"], aliases:["Gilbert & George"]},
+      {artist:"Jamie Reid", title:"God Save the Queen", year:1977, images:["london_art_assets/image37.jpg"], aliases:["Reid"]},
+      {artist:"Damien Hirst", title:"This Little Piggy", year:1996, images:["london_art_assets/image38.jpg"], aliases:["Hirst"]},
+      {artist:"Tracey Emin", title:"Everyone I Have Ever Slept With 1963-1995", year:1995, images:["london_art_assets/image39.jpg"], aliases:["Emin"], titleAliases:["Everyone I Have Ever Slept With"]},
+      {artist:"Grayson Perry", title:"Map of an Englishman", year:2004, images:["london_art_assets/image40.jpg"], aliases:["Perry"]},
+      {artist:"Jenny Saville", title:"Propped", year:1992, images:["london_art_assets/image41.jpg"], aliases:["Saville"]},
+      {artist:"Dietmar Lutz", title:"46 Sidney Road", year:2004, images:["london_art_assets/image42.jpg"], aliases:["Lutz"]},
+      {artist:"Bob and Roberta Smith", title:"Thamesmead Codex", year:2021, images:["london_art_assets/image43.jpg"], aliases:["Bob & Roberta Smith"]},
+      {artist:"Banksy", title:"Balloon Girl", year:2018, images:["london_art_assets/image44.jpg"], aliases:[]},
+      {artist:"Lynette Yiadom-Boakye", title:"Any Number of Preoccupations", year:2010, images:["london_art_assets/image45.jpg"], aliases:["Yiadom-Boakye","Yiadom Boakye"]},
+      {artist:"Kehinde Wiley", title:"Portrait of Lynette Yiadom-Boakye, Jacob Morland of Capplethwaite", year:2017, images:["london_art_assets/image46.jpg"], aliases:["Wiley"], titleAliases:["Portrait of Lynette Yiadom-Boakye","Jacob Morland of Capplethwaite"]},
+      {artist:"Cecily Brown", title:"The Hound with the Horses", year:2019, images:["london_art_assets/image47.jpg"], aliases:["Brown"]}
+    ];
+
+    const significance = {
+      "The Railway Station": "This work turns Paddington Station into a panorama of Victorian modern life, where class, travel, commerce, and public spectacle all meet. It is useful for explaining how London became both a subject of art and a market for mass spectatorship.",
+      "The Blue Bower": "Rossetti's painting shows the Pre-Raphaelite and Aesthetic turn toward beauty, music, color, and sensual surface rather than public social narrative. It helps frame Victorian femininity as a constructed image of desire and artistic refinement.",
+      "Flaming June": "Leighton's image is a classic example of late Victorian art for art's sake, prioritizing harmony, color, and idealized beauty over moral storytelling. It is especially useful for later comparisons with artists who challenge the idealized female body.",
+      "The Heart of the Empire": "This work imagines London as the symbolic center of imperial power. It gives you a strong starting point for comparisons with postcolonial artists who expose or revise the imperial story.",
+      "Mrs Mounter at the Breakfast Table": "Gilman makes an ordinary domestic interior into a modern subject, using color and pattern to give weight to everyday life. The painting is useful for discussing class, domestic labor, and Camden Town modernism.",
+      "Gauguins and Connoisseurs at the Stafford Gallery": "Gore's gallery scene shows London art culture absorbing Post-Impressionism and European modernism. It is important because it makes spectatorship, taste, and the art market part of the subject.",
+      "Abstract Painting": "Bell's abstraction marks a major break from narrative representation in British art. It shows how Bloomsbury artists translated European modernism into a London context.",
+      "Kermesse": "Lewis turns social festivity into angular, compressed modernist energy. The work is useful for Vorticism, fragmentation, and the aggressive prewar avant-garde.",
+      "The Rock Drill": "Epstein's sculpture fuses body and machine, making modern technology appear both powerful and threatening. It is a key work for thinking about the machine age just before World War I.",
+      "Gassed": "Sargent monumentalizes the bodily trauma of World War I through a procession of blinded soldiers. It is important because it transforms modern warfare into public, collective mourning rather than heroic victory.",
+      "We Are Making a New World": "Nash represents World War I as a devastated landscape rather than a battle scene. The bitterly ironic title makes the work a critique of modern destruction and false progress.",
+      "Whence & Whither?": "Power's linocut captures interwar speed, transport, and modern urban rhythm through simplified graphic force. It helps connect fine art with public design and the experience of moving through London.",
+      "The Deluge": "Knights reworks a biblical subject with modern structure, discipline, and psychological tension. It is useful for discussing women artists and the interwar revision of history painting.",
+      "Morning": "Procter presents the female body as monumental, still, and ambiguous rather than merely decorative. The work sits between Victorian ideal beauty and later feminist challenges to the nude.",
+      "Four Piece Composition: Reclining Figure": "Moore fragments the reclining body into abstracted forms while keeping a connection to human presence. It is central to British modern sculpture and the transformation of the figure.",
+      "Three Forms": "Hepworth's work shows abstraction as balanced, organic, and material. It is important for placing British sculpture within international modernism of the 1930s.",
+      "London Underground Map": "The Underground map shows modernism entering everyday public life through design, transport, and visual order. It makes London itself readable as an abstract system.",
+      "Angel of Anarchy": "Agar's work brings Surrealist instability, masking, and irrationality into British modernism. It is useful for identity, gender, and the uncanny side of the 1930s.",
+      "Devastation in the City: Twisted Girders against a Background of Fire": "Sutherland makes Blitz-damaged architecture look bodily and expressive. The work turns London into a wounded city rather than a stable imperial capital.",
+      "Totes Meer": "Nash turns wrecked aircraft into a dead metallic sea, linking technology with ruin. It extends his World War I landscape trauma into the context of World War II.",
+      "People Sheltering in the Tube, Elephant and Castle Underground Station": "Brandt photographs the Underground as a wartime refuge rather than a space of movement. The image is crucial for understanding the Blitz as a collective civilian experience.",
+      "Shelter Drawing": "Moore transforms London shelterers into monumental, almost timeless figures. The drawings turn wartime vulnerability into a modern version of sculptural human presence.",
+      "Rebuilding the Empire Cinema, Leicester Square": "Auerbach makes postwar reconstruction feel physical, dense, and difficult. The painting shows that rebuilding London was not a clean break from destruction but a continuation of struggle.",
+      "Study for Portrait after the Life Mask of William Blake": "Bacon turns portraiture into an image of psychological and bodily pressure. The work is central to postwar figuration and the damaged modern subject.",
+      "Boy Smoking": "Freud's close observation makes the sitter feel psychologically exposed and anti-glamorous. It is useful for postwar realism, intimacy, and the uncomfortable body.",
+      "The Only Blonde in the World": "Boty brings celebrity, glamour, and mass media into British Pop from a woman's perspective. The work helps critique femininity as a reproduced image.",
+      "A Rake's Progress: The Arrival": "Hockney updates the narrative tradition of the rake for a modern, transatlantic, queer art world. The work connects London art history with mobility, print culture, and self-fashioning.",
+      "Just What Is It That Makes Today's Homes So Different, So Appealing?": "Hamilton's collage is a foundational British Pop image of postwar consumer culture. It turns the home into a media-saturated space of advertising, bodies, technology, and desire.",
+      "Self-Portrait with Badges": "Blake presents the artist as a collector of popular signs, fandom, and youth identity. The work is key for Pop's merger of selfhood, mass culture, and art history.",
+      "Mirror": "Bowling's work helps expand British art beyond a narrow national frame, connecting abstraction with migration and Black Atlantic identity. It is useful for discussing diaspora and modern painting.",
+      "In the House of My Father": "Rodney links home, illness, fragility, and Black British experience in a highly intimate image. The small scale makes personal vulnerability carry broader historical weight.",
+      "Housewife with Steak Knives": "Biswas turns the domestic stereotype into an image of feminist and postcolonial power. The work challenges colonialism, gender roles, and the art-historical canon.",
+      "No Woman, No Cry": "Ofili's painting joins beauty, mourning, race, and public memory, especially around the murder of Stephen Lawrence. It is important for understanding Black British art as both personal and political.",
+      "Mr and Mrs Andrews Without Their Heads": "Shonibare rewrites a canonical British property portrait through Dutch wax fabric and missing heads. The work exposes how class, empire, trade, and representation are intertwined.",
+      "Are You Angry or Are You Boring?": "Gilbert and George use text, urban color, and their own personas to turn art into public provocation. It belongs to a London art world shaped by performance, language, and confrontation.",
+      "God Save the Queen": "Reid's punk image turns graphic design into anti-establishment politics. It is important because British art here circulates through posters, records, reproduction, and public anger.",
+      "This Little Piggy": "Hirst's vitrine work makes death, display, science, and market spectacle unstable categories. It is central to the YBA moment and debates over shock value in contemporary art.",
+      "Everyone I Have Ever Slept With 1963-1995": "Emin turns autobiography, intimacy, and naming into public installation. The work is important for YBA confession, vulnerability, and the politics of private life becoming art.",
+      "Map of an Englishman": "Perry maps identity as territory, language, class, and psychology. It is useful for thinking about Englishness as constructed rather than stable.",
+      "Propped": "Saville confronts the tradition of the female nude with large-scale flesh, text, and direct address. The painting is vital for feminist body politics and the anti-ideal body.",
+      "46 Sidney Road": "Lutz's work emphasizes ordinary London place, memory, and urban specificity. It helps shift the course story from grand imperial London to lived contemporary streets.",
+      "Thamesmead Codex": "Bob and Roberta Smith use text as image and public address. The work is useful for contemporary civic art, local place, and the political function of language.",
+      "Balloon Girl": "Banksy's image shows how street art moves between public wall, media image, auction spectacle, and market value. It is important for contemporary debates about authorship, destruction, and circulation.",
+      "Any Number of Preoccupations": "Yiadom-Boakye paints fictional Black figures with psychological presence and art-historical weight. Her portraits revise the tradition without turning the sitter into simple documentary evidence.",
+      "Portrait of Lynette Yiadom-Boakye, Jacob Morland of Capplethwaite": "Wiley reworks British aristocratic portrait conventions through a contemporary Black subject. The painting directly intervenes in museum display, status, race, and the portrait tradition.",
+      "The Hound with the Horses": "Brown keeps historical painting alive as a field of motion, instability, and dense brushwork. The work is useful as a contemporary endpoint for the afterlife of figurative painting."
+    };
+
+    const artistKnownFor = {
+      "William Powell Frith": "Frith is known for panoramic Victorian crowd scenes that turn modern public life into readable social theater. His paintings often organize many small incidents into one large, highly detailed narrative image.",
+      "Dante Gabriel Rossetti": "Rossetti is known as a central Pre-Raphaelite figure whose later work fused medievalism, sensual beauty, poetry, music, and decorative intensity. His art is especially associated with idealized, red-haired female figures and symbolic atmosphere.",
+      "Frederic Leighton": "Leighton is known for polished academic classicism and Aesthetic painting, especially idealized bodies, rich color, and art-for-art's-sake refinement. He represents the elite late Victorian art world and its taste for beauty and harmony.",
+      "Niels Lund": "Lund is known for views and symbolic images of London, including works that present the city through atmosphere, architecture, and imperial identity. In this course he is useful for thinking about London as a visual emblem of empire.",
+      "Harold Gilman": "Gilman is known for Camden Town modernism, strong color, and unsentimental scenes of everyday interiors and ordinary sitters. His work adapts Post-Impressionist color to London domestic and social subjects.",
+      "Spencer Gore": "Gore is known as a Camden Town painter interested in modern urban life, galleries, interiors, and Post-Impressionist color. His work often captures the culture of looking and modern taste in London.",
+      "Vanessa Bell": "Bell is known for Bloomsbury modernism, abstraction, decorative design, and the translation of European modernist ideas into British art. She was important in making color and form independent of narrative subject matter.",
+      "Wyndham Lewis": "Lewis is known as a founder of Vorticism, the angular and aggressive British avant-garde movement associated with speed, machinery, and modern urban energy. His work often fractures figures into sharp, dynamic forms.",
+      "Jacob Epstein": "Epstein is known for radical modern sculpture that challenged academic conventions and often provoked controversy. He explored the modern body, primitivism, machinery, and monumental public form.",
+      "John Singer Sargent": "Sargent is best known as a brilliant portraitist of elite society, but his war work shows his ability to turn public trauma into monumental painting. In this course he matters as an artist negotiating beauty, realism, and mass suffering.",
+      "Paul Nash": "Nash is known for British war landscapes, especially images where damaged terrain becomes a witness to modern violence. He also worked with surreal, symbolic landscapes that make technology and nature feel uncanny.",
+      "Cyril Power": "Power is known for dynamic linocuts of modern urban life, speed, sport, and transport. His graphic style is tied to interwar design and the visual rhythm of the modern city.",
+      "Winifred Knights": "Knights is known for carefully structured, psychologically charged figurative compositions, often using religious or historical subjects. She is important as a major woman artist in interwar British art.",
+      "Dod Procter": "Procter is known for monumental, quietly intense figure paintings, especially female figures treated with stillness and sculptural presence. Her work complicates the tradition of the nude and interwar realism.",
+      "Henry Moore": "Moore is known for modern sculpture based on reclining figures, abstracted bodies, organic forms, and the relationship between figure and landscape. He is also famous for wartime shelter drawings of Londoners during the Blitz.",
+      "Barbara Hepworth": "Hepworth is known for abstract modern sculpture, organic forms, carved materials, and pierced or balanced shapes. She helped make British sculpture central to international modernism.",
+      "Frank Pick": "Pick is known as a design administrator and patron who shaped the visual identity of the London Underground. He made modern design part of everyday urban experience through maps, posters, typography, and transport systems.",
+      "Eileen Agar": "Agar is known for British Surrealism, collage, assemblage, and works that explore irrationality, masks, gender, and transformation. Her art brings the dreamlike and uncanny into British modernism.",
+      "Graham Sutherland": "Sutherland is known for expressive landscapes, religious imagery, and wartime scenes of Blitz destruction. He often made natural or architectural forms feel tense, bodily, and psychologically charged.",
+      "Bill Brandt": "Brandt is known for black-and-white photography of British society, class, landscape, and wartime London. His images often make documentary subjects feel stark, dramatic, and socially revealing.",
+      "Frank Auerbach": "Auerbach is known for thickly worked paintings of London sites and intense portraits, often built through repeated scraping and repainting. His surfaces make memory, labor, and urban reconstruction physically visible.",
+      "Francis Bacon": "Bacon is known for distorted postwar figures, screaming heads, enclosed spaces, and psychologically violent portraiture. His work turns the human body into an image of existential pressure.",
+      "Lucian Freud": "Freud is known for closely observed portraits and nudes that emphasize flesh, scrutiny, and psychological exposure. His realism is intimate, uncomfortable, and anti-idealizing.",
+      "Pauline Boty": "Boty is known as one of the few prominent women associated with British Pop Art. Her work engages celebrity, sexuality, politics, and mass-media imagery from a distinctly female perspective.",
+      "David Hockney": "Hockney is known for paintings, prints, and drawings that explore modern life, sexuality, space, narrative, and looking. He is a central British Pop figure with a strong transatlantic identity.",
+      "Richard Hamilton": "Hamilton is known as a foundational figure in British Pop Art and the Independent Group. He used collage and mass-media imagery to analyze consumer culture, technology, advertising, and domestic desire.",
+      "Peter Blake": "Blake is known for British Pop Art, especially works that combine popular culture, music, badges, celebrities, and art-historical self-consciousness. He treats fandom and collecting as serious visual language.",
+      "Frank Bowling": "Bowling is known for abstract painting shaped by migration, color-field experimentation, and Black Atlantic identity. His career expands the story of British modernism beyond national boundaries.",
+      "Donald Rodney": "Rodney is known for Black British art dealing with illness, fragility, racism, history, and the body. His work often uses personal vulnerability to address wider political and social structures.",
+      "Sutapa Biswas": "Biswas is known for feminist and postcolonial work that challenges colonial history, domestic stereotypes, and the Western art canon. She often uses powerful female figures and hybrid visual references.",
+      "Chris Ofili": "Ofili is known for richly layered paintings using pattern, popular culture, religious references, elephant dung, and Black British experience. His work often combines beauty with political memory and spiritual intensity.",
+      "Yinka Shonibare": "Shonibare is known for postcolonial revisions of European art history using Dutch wax fabric, theatrical tableaux, and headless mannequins. His work critiques empire, class, authenticity, and British identity.",
+      "Gilbert and George": "Gilbert and George are known for treating themselves as living sculptures and for large, graphic photo-text works about urban life, sexuality, religion, anger, and social taboo. Their art is direct, public, and deliberately provocative.",
+      "Jamie Reid": "Reid is known for punk graphic design, especially his work for the Sex Pistols. His ransom-note typography and defaced royal imagery made anti-establishment politics visually iconic.",
+      "Damien Hirst": "Hirst is known as a leading Young British Artist whose vitrines, preserved animals, medicine cabinets, and spot paintings explore death, display, science, and market spectacle. His work often turns shock into institutional theater.",
+      "Tracey Emin": "Emin is known for autobiographical art using text, textile, installation, drawing, and confession. She makes intimacy, memory, sexuality, and vulnerability into public artistic material.",
+      "Grayson Perry": "Perry is known for ceramics, prints, tapestries, maps, and writing that explore class, taste, gender, masculinity, and English identity. His work combines craft traditions with sharp social analysis.",
+      "Jenny Saville": "Saville is known for large-scale paintings of flesh and the body that challenge idealized beauty and the history of the female nude. Her work is central to contemporary figurative painting and feminist body politics.",
+      "Dietmar Lutz": "Lutz is known for paintings of contemporary life and urban places, often attentive to ordinary settings and the atmosphere of lived environments. In this course he helps represent recent London as specific place rather than grand symbol.",
+      "Bob and Roberta Smith": "Bob and Roberta Smith is known for text-based paintings, signs, and public art that defend art education, civic voice, and democratic access to culture. His work treats language as both image and political statement.",
+      "Banksy": "Banksy is known for anonymous street art, stenciled images, anti-authoritarian humor, and works that circulate through walls, media, and the art market. His practice tests the boundary between public dissent and commercial spectacle.",
+      "Lynette Yiadom-Boakye": "Yiadom-Boakye is known for fictional Black portraits painted with restraint, ambiguity, and deep engagement with art history. Her work creates presence without biography, revising the portrait tradition from within.",
+      "Kehinde Wiley": "Wiley is known for large-scale portraits of Black sitters posed within the visual language of European aristocratic and historical portraiture. His work confronts power, race, status, and canon formation.",
+      "Cecily Brown": "Brown is known for energetic, layered paintings that move between abstraction and figuration. Her work reactivates historical painting through motion, fragmentation, eroticism, and dense brushwork."
+    };
+
+    const artFrame = document.getElementById("artFrame");
+    const form = document.getElementById("quizForm");
+    const artistInput = document.getElementById("artistInput");
+    const titleInput = document.getElementById("titleInput");
+    const dateInput = document.getElementById("dateInput");
+    const result = document.getElementById("result");
+    const counter = document.getElementById("counter");
+    const seenEl = document.getElementById("seen");
+    const artistScoreEl = document.getElementById("artistScore");
+    const titleScoreEl = document.getElementById("titleScore");
+    const dateScoreEl = document.getElementById("dateScore");
+    const nextButton = document.getElementById("nextButton");
+    const checkButton = document.getElementById("checkButton");
+    const shuffleToggle = document.getElementById("shuffleToggle");
+    const strictTitleToggle = document.getElementById("strictTitleToggle");
+
+    let order = [];
+    let position = 0;
+    let current = null;
+    let checked = false;
+    let seen = 0;
+    let artistCorrect = 0;
+    let titleCorrect = 0;
+    let dateCorrect = 0;
+
+    function normalize(value) {
+      return value
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .replace(/&/g, " and ")
+        .replace(/['’]/g, "")
+        .replace(/[^a-z0-9]+/g, " ")
+        .replace(/\b(the|a|an|of|for|after|with|and|at|in|to|their|today|todays)\b/g, " ")
+        .replace(/\s+/g, " ")
+        .trim();
+    }
+
+    function includesName(input, accepted) {
+      const answer = normalize(input);
+      if (!answer) return false;
+      return accepted.some(name => {
+        const n = normalize(name);
+        if (!n) return false;
+        return answer === n || answer.includes(n) || n.includes(answer);
+      });
+    }
+
+    function titleMatches(input, work) {
+      const accepted = [work.title, ...(work.titleAliases || [])];
+      if (strictTitleToggle.checked) {
+        return includesName(input, accepted);
+      }
+      const answer = normalize(input);
+      if (!answer) return false;
+      return accepted.some(title => {
+        const target = normalize(title);
+        if (!target) return false;
+        const answerWords = answer.split(" ").filter(Boolean);
+        const targetWords = target.split(" ").filter(Boolean);
+        if (answer === target || target.includes(answer) || answer.includes(target)) return true;
+        const hits = answerWords.filter(word => targetWords.includes(word)).length;
+        return hits >= Math.min(3, targetWords.length);
+      });
+    }
+
+    function dateRange(work) {
+      const start = work.startYear || work.year;
+      const end = work.endYear || work.year;
+      return {
+        start: start - 10,
+        end: end + 10
+      };
+    }
+
+    function dateMatches(input, work) {
+      const raw = String(input || "").trim();
+      if (!/^\d{3,4}$/.test(raw)) return false;
+      const guessedYear = Number(raw);
+      const range = dateRange(work);
+      return guessedYear >= range.start && guessedYear <= range.end;
+    }
+
+    function displayDate(work) {
+      return work.dateLabel || String(work.year);
+    }
+
+    function shuffle(array) {
+      const copy = [...array];
+      for (let i = copy.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [copy[i], copy[j]] = [copy[j], copy[i]];
+      }
+      return copy;
+    }
+
+    function resetOrder() {
+      const indexes = works.map((_, i) => i);
+      order = shuffleToggle.checked ? shuffle(indexes) : indexes;
+      position = 0;
+    }
+
+    function renderWork() {
+      if (position >= order.length) resetOrder();
+      current = works[order[position]];
+      checked = false;
+      artFrame.classList.toggle("two", current.images.length > 1);
+      artFrame.innerHTML = current.images.map(src => `<img src="${src}" alt="">`).join("");
+      counter.textContent = `Work ${position + 1} of ${works.length}`;
+      result.innerHTML = "<h2>Ready</h2><p>Look only at the image, then enter the ID.</p>";
+      artistInput.value = "";
+      titleInput.value = "";
+      dateInput.value = "";
+      artistInput.focus();
+      checkButton.textContent = "Check";
+    }
+
+    function updateScores() {
+      seenEl.textContent = seen;
+      artistScoreEl.textContent = artistCorrect;
+      titleScoreEl.textContent = titleCorrect;
+      dateScoreEl.textContent = dateCorrect;
+    }
+
+    function checkAnswer() {
+      const artistOk = includesName(artistInput.value, [current.artist, ...(current.aliases || [])]);
+      const titleOk = titleMatches(titleInput.value, current);
+      const dateOk = dateMatches(dateInput.value, current);
+      const range = dateRange(current);
+
+      seen += 1;
+      if (artistOk) artistCorrect += 1;
+      if (titleOk) titleCorrect += 1;
+      if (dateOk) dateCorrect += 1;
+      updateScores();
+      checked = true;
+      checkButton.textContent = "Next";
+
+      result.innerHTML = `
+        <h2>${artistOk && titleOk && dateOk ? "Correct" : "Check this one"}</h2>
+        <p><span class="${artistOk ? "ok" : "bad"}">${artistOk ? "Artist OK" : "Artist missed"}</span></p>
+        <p><span class="${titleOk ? "ok" : "bad"}">${titleOk ? "Title OK" : "Title missed"}</span></p>
+        <p><span class="${dateOk ? "ok" : "bad"}">${dateOk ? "Date OK" : "Date outside ±10 years"}</span></p>
+        <div class="answer">
+          <p><strong>Artist:</strong> ${current.artist}</p>
+          <p><strong>Title:</strong> <em>${current.title}</em></p>
+          <p><strong>Date:</strong> ${displayDate(current)} <span style="color:var(--muted)">(accepted ${range.start}-${range.end})</span></p>
+          <p><strong>Artist known for:</strong> ${artistKnownFor[current.artist] || "This artist is known for work connected to the course's broader timeline of British and London art."}</p>
+          <p><strong>Historical significance:</strong> ${significance[current.title] || "This work is significant for the course timeline and should be connected to its period, medium, and London context."}</p>
+        </div>
+      `;
+    }
+
+    function nextWork() {
+      position += 1;
+      renderWork();
+    }
+
+    form.addEventListener("submit", event => {
+      event.preventDefault();
+      if (checked) {
+        nextWork();
+      } else {
+        checkAnswer();
+      }
+    });
+
+    nextButton.addEventListener("click", () => nextWork());
+    shuffleToggle.addEventListener("change", () => {
+      resetOrder();
+      renderWork();
+    });
+
+    resetOrder();
+    updateScores();
+    renderWork();
+  </script>
+</body>
+</html>
