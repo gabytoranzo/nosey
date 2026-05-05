@@ -160,6 +160,33 @@
       opacity: .55;
     }
 
+    .audio-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px solid var(--line);
+    }
+
+    .audio-button {
+      width: 38px;
+      height: 38px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      padding: 0;
+      font-size: 17px;
+      line-height: 1;
+    }
+
+    .audio-label {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.35;
+    }
+
     .result {
       border: 1px solid var(--line);
       background: #fff;
@@ -486,6 +513,7 @@
     let artistCorrect = 0;
     let titleCorrect = 0;
     let dateCorrect = 0;
+    let preferredVoice = null;
 
     function normalize(value) {
       return value
@@ -547,6 +575,39 @@
 
     function displayDate(work) {
       return work.dateLabel || String(work.year);
+    }
+
+    function loadPreferredVoice() {
+      if (!("speechSynthesis" in window)) return null;
+      const voices = window.speechSynthesis.getVoices();
+      preferredVoice =
+        voices.find(voice => voice.lang && voice.lang.toLowerCase() === "en-gb") ||
+        voices.find(voice => voice.lang && voice.lang.toLowerCase().startsWith("en-gb")) ||
+        voices.find(voice => /british|uk|united kingdom|daniel|kate|serena|susan/i.test(voice.name)) ||
+        voices.find(voice => voice.lang && voice.lang.toLowerCase().startsWith("en")) ||
+        null;
+      return preferredVoice;
+    }
+
+    function buildAudioText(work) {
+      const artistNote = artistKnownFor[work.artist] || "";
+      const workNote = significance[work.title] || "";
+      return `${work.artist}. ${work.title}, ${displayDate(work)}. Artist known for: ${artistNote} Historical significance: ${workNote}`;
+    }
+
+    function readCurrentDescription() {
+      if (!("speechSynthesis" in window)) {
+        result.querySelector(".audio-label").textContent = "Audio is not supported in this browser.";
+        return;
+      }
+      window.speechSynthesis.cancel();
+      const utterance = new SpeechSynthesisUtterance(buildAudioText(current));
+      utterance.lang = "en-GB";
+      utterance.rate = 0.92;
+      utterance.pitch = 1;
+      const voice = preferredVoice || loadPreferredVoice();
+      if (voice) utterance.voice = voice;
+      window.speechSynthesis.speak(utterance);
     }
 
     function shuffle(array) {
@@ -611,8 +672,13 @@
           <p><strong>Date:</strong> ${displayDate(current)} <span style="color:var(--muted)">(accepted ${range.start}-${range.end})</span></p>
           <p><strong>Artist known for:</strong> ${artistKnownFor[current.artist] || "This artist is known for work connected to the course's broader timeline of British and London art."}</p>
           <p><strong>Historical significance:</strong> ${significance[current.title] || "This work is significant for the course timeline and should be connected to its period, medium, and London context."}</p>
+          <div class="audio-row">
+            <button type="button" class="audio-button" id="readButton" aria-label="Read description aloud" title="Read description aloud">▶</button>
+            <span class="audio-label">Read this description aloud. Uses a British English voice when available.</span>
+          </div>
         </div>
       `;
+      document.getElementById("readButton").addEventListener("click", readCurrentDescription);
     }
 
     function nextWork() {
@@ -637,6 +703,10 @@
 
     resetOrder();
     updateScores();
+    loadPreferredVoice();
+    if ("speechSynthesis" in window) {
+      window.speechSynthesis.onvoiceschanged = loadPreferredVoice;
+    }
     renderWork();
   </script>
 </body>
