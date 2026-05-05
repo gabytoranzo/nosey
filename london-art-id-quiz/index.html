@@ -580,13 +580,17 @@
     function loadPreferredVoice() {
       if (!("speechSynthesis" in window)) return null;
       const voices = window.speechSynthesis.getVoices();
+      const britishFemaleVoicePattern = /google uk english female|female.*uk|uk.*female|british.*female|female.*british|kate|serena|sonia|susan|libby/i;
+      const britishVoicePattern = /en-gb|british|uk|united kingdom|google uk english|daniel|kate|serena|sonia|susan|libby/i;
       const femaleVoicePattern = /female|woman|kate|serena|susan|samantha|victoria|karen|moira|tessa|fiona|zira|shelley|martha|libby|sonia/i;
       preferredVoice =
+        voices.find(voice => voice.lang && voice.lang.toLowerCase().startsWith("en-gb") && britishFemaleVoicePattern.test(voice.name)) ||
+        voices.find(voice => britishFemaleVoicePattern.test(voice.name)) ||
         voices.find(voice => voice.lang && voice.lang.toLowerCase().startsWith("en-gb") && femaleVoicePattern.test(voice.name)) ||
-        voices.find(voice => /british|uk|united kingdom/i.test(voice.name) && femaleVoicePattern.test(voice.name)) ||
-        voices.find(voice => femaleVoicePattern.test(voice.name) && voice.lang && voice.lang.toLowerCase().startsWith("en")) ||
-        voices.find(voice => voice.lang && voice.lang.toLowerCase() === "en-gb") ||
+        voices.find(voice => britishVoicePattern.test(`${voice.name} ${voice.lang || ""}`) && femaleVoicePattern.test(voice.name)) ||
         voices.find(voice => voice.lang && voice.lang.toLowerCase().startsWith("en-gb")) ||
+        voices.find(voice => britishVoicePattern.test(`${voice.name} ${voice.lang || ""}`)) ||
+        voices.find(voice => femaleVoicePattern.test(voice.name) && voice.lang && voice.lang.toLowerCase().startsWith("en")) ||
         voices.find(voice => voice.lang && voice.lang.toLowerCase().startsWith("en")) ||
         null;
       return preferredVoice;
