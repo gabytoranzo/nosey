@@ -610,7 +610,7 @@
       window.speechSynthesis.cancel();
       const utterance = new SpeechSynthesisUtterance(buildAudioText(current));
       utterance.lang = "en-GB";
-      utterance.rate = 1.5;
+      utterance.rate = 1.25;
       utterance.pitch = 1;
       const voice = preferredVoice || loadPreferredVoice();
       if (voice) utterance.voice = voice;
